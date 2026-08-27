@@ -3,6 +3,7 @@ using Appccelerate.StateMachine.Machine;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ScreentimeManagerCore.Interfaces;
+using ScreentimeManagerCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,22 @@ namespace ScreentimeManagerCore.Services
         protected readonly IRemoteShutdownService _remoteShutdownService;
         protected readonly ScreentimeCounterService _counterService;
         protected readonly PassiveStateMachine<States, Events> _stateMachine;
+
+        public HostStatus CurrentHostStatus
+        {
+            get
+            {
+                var result = new HostStatus()
+                {
+                    Hostname = _hostOnlineCheckService.CurrentConfiguration.Host,
+                    ScreentimeLeft = _counterService.RemainingScreentime,
+                    ScreentimeLimit = _counterService.ScreentimeLimit,
+                    IsOnline = _hostOnlineCheckService.HostIsOnline
+                };
+
+                return result;
+            }
+        }
 
         public ScreentimeManagerStatemachine(ILogger<ScreentimeManagerStatemachine> logger, IHostOnlineCheckService hostOnlineCheckService, IRemoteShutdownService remoteShutdownService, ScreentimeCounterService counterService)
         {

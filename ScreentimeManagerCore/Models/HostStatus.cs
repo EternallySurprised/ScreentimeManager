@@ -11,12 +11,12 @@ namespace ScreentimeManagerCore.Models
         public virtual string Hostname { get; set; } = "";
         public virtual bool IsOnline { get; set; }
         public virtual TimeSpan ScreentimeLeft { get; set; }
-        public virtual TimeSpan MaximumScreentime { get; set; }
+        public virtual TimeSpan ScreentimeLimit { get; set; }
         public virtual double ScreentimeUsedPercent
         {
             get
             {
-                double ret = ScreentimeLeft.Divide(MaximumScreentime) * 100.0;
+                double ret = (1 - ScreentimeLeft.Divide(ScreentimeLimit)) * 100.0;
                 return double.IsNaN(ret) || double.IsNegative(ret) ? 0.0 : ret;
             }
         }

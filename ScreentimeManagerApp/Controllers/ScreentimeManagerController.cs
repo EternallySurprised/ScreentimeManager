@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ScreentimeManagerCore.Models;
+using ScreentimeManagerCore.Services;
 
 namespace ScreentimeManagerApp.Controllers
 {
@@ -7,18 +8,20 @@ namespace ScreentimeManagerApp.Controllers
     [Route("api/status")]
     public class ScreentimeManagerController : ControllerBase
     {
-        private readonly ILogger<ScreentimeManagerController> _logger;
+        protected readonly ILogger<ScreentimeManagerController> _logger;
+        protected readonly ScreentimeManagerStatemachine _statemachine;
 
-        public ScreentimeManagerController(ILogger<ScreentimeManagerController> logger)
+        public ScreentimeManagerController(ILogger<ScreentimeManagerController> logger, ScreentimeManagerStatemachine statemachine)
         {
             _logger = logger;
+            _statemachine = statemachine;
         }
 
         // GET: api/status
         [HttpGet]
         public async Task<IActionResult> GetStatus()
         {
-            HostStatus status = new HostStatus();
+            HostStatus status = _statemachine.CurrentHostStatus;
 
             if (status != null) return Ok(status);
 

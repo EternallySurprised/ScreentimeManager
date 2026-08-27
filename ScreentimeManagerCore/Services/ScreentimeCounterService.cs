@@ -15,6 +15,7 @@ namespace ScreentimeManagerCore.Services
 {
     public class ScreentimeCounterService : BackgroundService
     {
+        protected const int FALLBACK_SCREENTIME_LIMIT = 180;
         protected readonly ILogger<ScreentimeCounterService> _logger;
         protected readonly IOptions<ScreentimeCounterConfiguration> _config;
         protected readonly IHostOnlineCheckService _onlineCheckService;
@@ -23,6 +24,14 @@ namespace ScreentimeManagerCore.Services
         protected DateTime _lastCheckTime;
 
         public TimeSpan RemainingScreentime { get; protected set; }
+
+        public TimeSpan ScreentimeLimit
+        {
+            get
+            {
+                return new TimeSpan(0, _config.Value.ScreentimeLimitMinutes >= 0 ? _config.Value.ScreentimeLimitMinutes : FALLBACK_SCREENTIME_LIMIT, 0);
+            }
+        }
 
         public bool ScreentimeExceeded
         {
@@ -53,8 +62,7 @@ namespace ScreentimeManagerCore.Services
                     // Reset on new day
                     if (_currentDay != today)
                     {
-                        int screentimeLimit = _config.Value.ScreentimeLimitMinutes >= 0 ? _config.Value.ScreentimeLimitMinutes : 180;
-                        RemainingScreentime = new TimeSpan(0, screentimeLimit, 0);
+                        RemainingScreentime = ScreentimeLimit;
                         _logger.LogInformation($"Today is {today.ToString("d")}. Screentime reset.");
                         _currentDay = today;
                     }
