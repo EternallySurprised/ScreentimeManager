@@ -16,7 +16,8 @@ namespace ScreentimeManagerCore.Models
         {
             get
             {
-                return ScreentimeLeft.Divide(MaximumScreentime) * 100.0;
+                double ret = ScreentimeLeft.Divide(MaximumScreentime) * 100.0;
+                return double.IsNaN(ret) || double.IsNegative(ret) ? 0.0 : ret;
             }
         }
     }
