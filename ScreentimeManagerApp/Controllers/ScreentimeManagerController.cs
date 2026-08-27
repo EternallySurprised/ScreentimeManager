@@ -23,6 +23,10 @@ namespace ScreentimeManagerApp.Controllers
         {
             HostStatus status = _statemachine.CurrentHostStatus;
 
+            // Ignore milliseconds for API responses
+            status.ScreentimeLeft = new TimeSpan(status.ScreentimeLeft.Hours, status.ScreentimeLeft.Minutes, status.ScreentimeLeft.Seconds);
+            status.ScreentimeLimit = new TimeSpan(status.ScreentimeLimit.Hours, status.ScreentimeLimit.Minutes, status.ScreentimeLimit.Seconds);
+
             if (status != null) return Ok(status);
 
             else return NotFound();
