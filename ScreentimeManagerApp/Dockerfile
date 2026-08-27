@@ -7,6 +7,26 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Temporarily become root to install the required utilities (ping & net)
+USER root
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends iputils-ping samba-common-bin \
+ && rm -rf /var/lib/apt/lists/*
+
+# Revert to the non-root app user that the base image expects
+USER $APP_UID
+WORKDIR /app
+
+# Define Environment Variables with some default values
+ENV CULTURE de-De
+ENV SCREENTIME_LIMIT_MINUTES 180
+ENV SCREENTIME_COUNT_INTERVAL_MS 2000
+ENV PING_INTERVAL_MS 10000
+ENV PING_TIMEOUT_MS 200
+ENV DISCORD_WEBHOOK_URL https://localhost
+ENV PING_HOST localhost
+ENV HOST_USER Admin
+ENV PASSWD ChangeMe
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Services
 {
-    internal class ScreentimeCounterService : BackgroundService
+    public class ScreentimeCounterService : BackgroundService
     {
         protected readonly ILogger<ScreentimeCounterService> _logger;
         protected readonly IOptions<ScreentimeCounterConfiguration> _config;
@@ -56,12 +56,17 @@ namespace ScreentimeManagerCore.Services
                         int screentimeLimit = _config.Value.ScreentimeLimitMinutes >= 0 ? _config.Value.ScreentimeLimitMinutes : 180;
                         RemainingScreentime = new TimeSpan(0, screentimeLimit, 0);
                         _logger.LogInformation($"Today is {today.ToString("d")}. Screentime reset.");
+                        _currentDay = today;
                     }
-                    else
+                    else if (_onlineCheckService.HostIsOnline)
                     {
                         TimeSpan passedTime = DateTime.Now - _lastCheckTime;
                         RemainingScreentime = RemainingScreentime.Subtract(passedTime);
                         _logger.LogInformation($"Remaining Screentime: {RemainingScreentime.ToString()}");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Host is offline. Screentime countdown stopped.");
                     }
 
                     // Save last check time

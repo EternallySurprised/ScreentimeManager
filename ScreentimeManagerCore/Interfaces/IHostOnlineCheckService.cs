@@ -1,8 +1,9 @@
-﻿using ScreentimeManagerCore.Configuration;
+﻿using Microsoft.Extensions.Hosting;
+using ScreentimeManagerCore.Configuration;
 
 namespace ScreentimeManagerCore.Interfaces
 {
-    public interface IHostOnlineCheckService
+    public interface IHostOnlineCheckService : IHostedService
     {
         /// <summary>
         /// Gets the current configuration settings for the online check process.

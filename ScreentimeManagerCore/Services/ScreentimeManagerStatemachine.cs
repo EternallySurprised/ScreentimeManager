@@ -31,15 +31,16 @@ namespace ScreentimeManagerCore.Services
         protected readonly ILogger<ScreentimeManagerStatemachine> _logger;
         protected readonly IHostOnlineCheckService _hostOnlineCheckService;
         protected readonly IRemoteShutdownService _remoteShutdownService;
+        protected readonly ScreentimeCounterService _counterService;
         protected readonly PassiveStateMachine<States, Events> _stateMachine;
 
-        public ScreentimeManagerStatemachine(ILogger<ScreentimeManagerStatemachine> logger, IHostOnlineCheckService hostOnlineCheckService, IRemoteShutdownService remoteShutdownService)
+        public ScreentimeManagerStatemachine(ILogger<ScreentimeManagerStatemachine> logger, IHostOnlineCheckService hostOnlineCheckService, IRemoteShutdownService remoteShutdownService, ScreentimeCounterService counterService)
         {
             _logger = logger;
             _hostOnlineCheckService = hostOnlineCheckService;
             _hostOnlineCheckService.HostStatusUpdated += OnHostStatusUpdated;
-
             _remoteShutdownService = remoteShutdownService;
+            _counterService = counterService;
 
             var builder = new StateMachineDefinitionBuilder<States, Events>();
 
@@ -68,6 +69,7 @@ namespace ScreentimeManagerCore.Services
 
             // Create FSM
             _stateMachine = definition.CreatePassiveStateMachine("ScreentimeManager");
+            _counterService = counterService;
         }
 
         /// <summary>
@@ -98,9 +100,13 @@ namespace ScreentimeManagerCore.Services
             _prevHostOnline = isOnline;
         }
 
+        /// <summary>
+        /// Checks if the screentime is used up.
+        /// </summary>
+        /// <returns></returns>
         protected bool CheckTimeUp()
         {
-            return false;
+            return _counterService.ScreentimeExceeded;
         }
 
         protected void ExecuteShutdown()
