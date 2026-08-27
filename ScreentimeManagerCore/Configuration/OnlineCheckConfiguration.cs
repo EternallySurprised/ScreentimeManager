@@ -11,7 +11,7 @@ namespace ScreentimeManagerCore.Configuration
         /// Hostname of the host to ping
         /// </summary>
         [ConfigurationKeyName("PING_HOST")]
-        public virtual string Host { get; set; } = "";
+        public virtual string Host { get; set; } = "localhost";
 
         /// <summary>
         /// Timeout for Online-Check in Milliseconds.
