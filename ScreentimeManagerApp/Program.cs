@@ -26,7 +26,7 @@ namespace ScreentimeManagerApp
                 .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
-            //builder.Services.AddSerilog();
+            builder.Services.AddSerilog();
 
             // Add services to the container.
 
