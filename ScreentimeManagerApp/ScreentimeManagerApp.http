@@ -1,0 +1,6 @@
+@ScreentimeManagerApp_HostAddress = http://localhost:5290
+
+GET {{ScreentimeManagerApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
