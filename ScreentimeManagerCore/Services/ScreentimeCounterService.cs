@@ -1,0 +1,83 @@
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ScreentimeManagerCore.Configuration;
+using ScreentimeManagerCore.Interfaces;
+using ScreentimeManagerCore.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ScreentimeManagerCore.Services
+{
+    internal class ScreentimeCounterService : BackgroundService
+    {
+        protected readonly ILogger<ScreentimeCounterService> _logger;
+        protected readonly IOptions<ScreentimeCounterConfiguration> _config;
+        protected readonly IHostOnlineCheckService _onlineCheckService;
+        protected readonly int _interval;
+        protected DateTime _currentDay;
+        protected DateTime _lastCheckTime;
+
+        public TimeSpan RemainingScreentime { get; protected set; }
+
+        public bool ScreentimeExceeded
+        {
+            get
+            {
+                return RemainingScreentime <= TimeSpan.Zero;
+            }
+        }
+
+        public ScreentimeCounterService(ILogger<ScreentimeCounterService> logger, IOptions<ScreentimeCounterConfiguration> config, IHostOnlineCheckService onlineCheckService)
+        {
+            _logger = logger;
+            _config = config;
+            _onlineCheckService = onlineCheckService;
+
+            _interval = _config.Value.CheckInterval > 0 ? _config.Value.CheckInterval : 1000;
+            RemainingScreentime = _config.Value.ScreentimeLimitMinutes >= 0 ? new TimeSpan(0, _config.Value.ScreentimeLimitMinutes, 0) : new TimeSpan(0, 180, 0);
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    DateTime today = DateTime.Today.Date;
+
+                    // Reset on new day
+                    if (_currentDay != today)
+                    {
+                        int screentimeLimit = _config.Value.ScreentimeLimitMinutes >= 0 ? _config.Value.ScreentimeLimitMinutes : 180;
+                        RemainingScreentime = new TimeSpan(0, screentimeLimit, 0);
+                        _logger.LogInformation($"Today is {today.ToString("d")}. Screentime reset.");
+                    }
+                    else
+                    {
+                        TimeSpan passedTime = DateTime.Now - _lastCheckTime;
+                        RemainingScreentime = RemainingScreentime.Subtract(passedTime);
+                        _logger.LogInformation($"Remaining Screentime: {RemainingScreentime.ToString()}");
+                    }
+
+                    // Save last check time
+                    _lastCheckTime = DateTime.Now;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while checking host status.");
+                }
+                finally
+                {
+                    // Wait for a specified interval before checking again
+                    await Task.Delay(TimeSpan.FromMilliseconds(_interval));
+                }
+            }
+
+        }
+    }
+}
