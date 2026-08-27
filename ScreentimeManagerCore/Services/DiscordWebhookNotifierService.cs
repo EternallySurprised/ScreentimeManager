@@ -14,8 +14,8 @@ namespace ScreentimeManagerCore.Services
     {
         const string TIMESPAN_FORMAT = @"hh'h 'mm'min 'ss's'";
         const string DISPLAYED_USER = "Screentime Manager";
-        const string THUMBNAIL_URL = "https://cdn-icons-png.flaticon.com/512/11320/11320024.png";
-        const string ACCOUNT_IMAGE_URL = "https://cdn.pixabay.com/photo/2021/09/20/22/15/hourglass-6641967_1280.png";
+        const string THUMBNAIL_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/OOjs_UI_icon_clock-destructive.svg/120px-OOjs_UI_icon_clock-destructive.svg.png";
+        const string ACCOUNT_IMAGE_URL = "https://jnrowe.github.io/_images/appointment-new.png";
 
         protected readonly ILogger<DiscordWebhookNotifierService> _logger;
         protected readonly IOptions<WebhookNotifierConfiguration> _config;
