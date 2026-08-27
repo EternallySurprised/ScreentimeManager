@@ -5,19 +5,15 @@ using Microsoft.Extensions.Options;
 using ScreentimeManagerCore.Configuration;
 using ScreentimeManagerCore.Interfaces;
 using ScreentimeManagerCore.Models;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Services
 {
     public class DiscordWebhookNotifierService : IWebhookNotifier
     {
         const string TIMESPAN_FORMAT = @"hh'h 'mm'min 'ss's'";
+        const string DISPLAYED_USER = "Screentime Manager";
         const string THUMBNAIL_URL = "https://cdn-icons-png.flaticon.com/512/11320/11320024.png";
         const string ACCOUNT_IMAGE_URL = "https://cdn.pixabay.com/photo/2021/09/20/22/15/hourglass-6641967_1280.png";
 
@@ -82,7 +78,7 @@ namespace ScreentimeManagerCore.Services
             return new MessageBuilder
             {
                 Content = $"@everyone",
-                Username = $"Screentime Manager",
+                Username = DISPLAYED_USER,
                 AvatarUrl = ACCOUNT_IMAGE_URL,
                 Embeds = [
                         new EmbedBuilder
@@ -103,7 +99,7 @@ namespace ScreentimeManagerCore.Services
                                         Inline = true
                                     }
                                 ],
-                                Footer = new EmbedFooterBuilder { Text = "Screentime Manager"},
+                                Footer = new EmbedFooterBuilder { Text = DISPLAYED_USER},
                                 Timestamp = DateTime.Now
                         }
                 ]
@@ -116,7 +112,7 @@ namespace ScreentimeManagerCore.Services
             return new MessageBuilder
             {
                 Content = $"@everyone",
-                Username = $"Screentime Manager",
+                Username = DISPLAYED_USER,
                 AvatarUrl = ACCOUNT_IMAGE_URL,
                 Embeds = [
                         new EmbedBuilder
@@ -132,7 +128,7 @@ namespace ScreentimeManagerCore.Services
                                         Inline = true
                                     }
                                 ],
-                                Footer = new EmbedFooterBuilder { Text = "Screentime Manager"},
+                                Footer = new EmbedFooterBuilder { Text = DISPLAYED_USER},
                                 Timestamp = DateTime.Now
                         }
                 ]
@@ -145,7 +141,7 @@ namespace ScreentimeManagerCore.Services
             return new MessageBuilder
             {
                 Content = $"@everyone",
-                Username = $"Screentime Manager",
+                Username = DISPLAYED_USER,
                 AvatarUrl = ACCOUNT_IMAGE_URL,
                 Embeds = [
                         new EmbedBuilder
@@ -166,7 +162,7 @@ namespace ScreentimeManagerCore.Services
                                         Inline = true
                                     }
                                 ],
-                                Footer = new EmbedFooterBuilder { Text = "Screentime Manager"},
+                                Footer = new EmbedFooterBuilder { Text = DISPLAYED_USER},
                                 Timestamp = DateTime.Now
                         }
                 ]
