@@ -45,9 +45,13 @@ namespace ScreentimeManagerApp
             builder.Services.AddOptions<ScreentimeCounterConfiguration>()
                 .Bind(configuration)
                 .ValidateOnStart();
+            builder.Services.AddOptions<WebhookNotifierConfiguration>()
+                .Bind(configuration)
+                .ValidateOnStart();
 
             // Add background services to the DI container
             builder.Services.AddSingleton<IRemoteShutdownService, NetRemoteShutdownService>();
+            builder.Services.AddSingleton<IWebhookNotifier, DiscordWebhookNotifierService>();
             // Add IHostedService in a way that allows cross-service DI
             builder.Services.AddSingleton<IHostOnlineCheckService, PingHostOnlineCheckService>();
             builder.Services.AddSingleton<IHostedService>(p => p.GetRequiredService<IHostOnlineCheckService>());

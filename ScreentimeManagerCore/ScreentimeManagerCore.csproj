@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Appccelerate.StateMachine" Version="6.0.0" />
+    <PackageReference Include="CSharpDiscordWebhook" Version="3.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11" />

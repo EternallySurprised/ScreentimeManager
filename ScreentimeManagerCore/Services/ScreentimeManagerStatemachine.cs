@@ -33,6 +33,7 @@ namespace ScreentimeManagerCore.Services
         protected readonly IHostOnlineCheckService _hostOnlineCheckService;
         protected readonly IRemoteShutdownService _remoteShutdownService;
         protected readonly ScreentimeCounterService _counterService;
+        protected readonly IWebhookNotifier _webhookNotifier;
         protected readonly PassiveStateMachine<States, Events> _stateMachine;
 
         public HostStatus CurrentHostStatus
@@ -51,12 +52,18 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
-        public ScreentimeManagerStatemachine(ILogger<ScreentimeManagerStatemachine> logger, IHostOnlineCheckService hostOnlineCheckService, IRemoteShutdownService remoteShutdownService, ScreentimeCounterService counterService)
+        public ScreentimeManagerStatemachine(
+            ILogger<ScreentimeManagerStatemachine> logger, 
+            IHostOnlineCheckService hostOnlineCheckService, 
+            IRemoteShutdownService remoteShutdownService, 
+            IWebhookNotifier webhookNotifier,
+            ScreentimeCounterService counterService)
         {
             _logger = logger;
             _hostOnlineCheckService = hostOnlineCheckService;
             _hostOnlineCheckService.HostStatusUpdated += OnHostStatusUpdated;
             _remoteShutdownService = remoteShutdownService;
+            _webhookNotifier = webhookNotifier;
             _counterService = counterService;
 
             var builder = new StateMachineDefinitionBuilder<States, Events>();
@@ -143,19 +150,19 @@ namespace ScreentimeManagerCore.Services
         protected void NotifyTimeUp()
         {
             _logger.LogInformation("Screentime for host is used up.");
-            // Implement the notification logic here
+            _webhookNotifier.NotifyTimeUpAsync(CurrentHostStatus);
         }
 
         protected void NotifyTurnedOnWithoutTimeLeft()
         {
             _logger.LogInformation("Host turned on without time left.");
-            // Implement the notification logic here
+            _webhookNotifier.NotifyTurnedOnWithoutTimeLeftAsync(CurrentHostStatus);
         }
 
         protected void NotifyHostHasShutdown()
         {
             _logger.LogInformation("Host has shutdown.");
-            // Implement the notification logic here
+            _webhookNotifier.NotifyHostHasShutdownAsync(CurrentHostStatus);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

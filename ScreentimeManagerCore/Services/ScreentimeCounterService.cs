@@ -70,11 +70,11 @@ namespace ScreentimeManagerCore.Services
                     {
                         TimeSpan passedTime = DateTime.Now - _lastCheckTime;
                         RemainingScreentime = RemainingScreentime.Subtract(passedTime);
-                        _logger.LogInformation($"Remaining Screentime: {RemainingScreentime.ToString()}");
+                        _logger.LogDebug($"Remaining Screentime: {RemainingScreentime.ToString()}");
                     }
                     else
                     {
-                        _logger.LogInformation($"Host is offline. Screentime countdown stopped.");
+                        _logger.LogDebug($"Host is offline. Screentime countdown stopped.");
                     }
 
                     // Save last check time
