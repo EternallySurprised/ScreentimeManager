@@ -1,11 +1,18 @@
-# ScreentimeManager
+# _ScreentimeManager_
 ## Description
-ScreentimeManager is a hosted application used to monitor the screentime of a Windows computer on the local network and shut the computer down once a predefined screentime is exceeded. This allows e.g. parent to enforce screentime limits. Just setting a playtime limit in Steam doen't cut it.
+_ScreentimeManager_ is a hosted application used to monitor the screentime of a Windows computer on the local network and shut the computer down once a predefined screentime is exceeded. This allows e.g. parent to enforce screentime limits. Just setting a playtime limit in Steam doen't cut it.
 
-## Computer Configuration
-### Basics
+## Features
+The _ScreentimeManager_ is a very simple tool with the following core features:
+- It tracks the daily screentime of a single target computer.
+- A daily screentime limit can be set and the target system is shut down remotely once the screentime limit is exceeded.
+- If the target system is restarted after it was shutdown, a new shutdown will be triggered.
+- Notifications can be sent to a Discord server using a [Discord Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks).
+- WebAPI for integration into a dashboard, for example [homepage](https://github.com/gethomepage/homepage)
+
+## Target Computer Configuration
 There are some things that need to be in place for remote shutdowns to work on a Windows machine:
-- The system running ScreentimeManager needs to be on the same network as the target computer
+- The system running _ScreentimeManager_ needs to be on the same network as the target computer
 - You need to have a user on the target system that has administrative privileges and know that user's credentials
 - Appropriate firewall settings (see below)
 
@@ -31,3 +38,70 @@ This is required to be able to actually receive the shutdown command
 - Add a new rule at _Inbound Rules_ > _New Rule_ > _Port_ > _TCP_ > _Specific local ports: **445**_ > _Next_.
 - _Allow the connection_ > Next > _Check: Domain, Private, and/or Public, depending on how your network is classified_ > _Next_
 - Name the rule and click _Finish_.
+
+## Configuration
+Configuration of the _ScreentimeManager_ is done using the following environment variables:
+| Variable | Description |
+| --- | --- |
+| `CULTURE` | Defines the *localization culture* used for the notification messages. |
+| `SCREENTIME_LIMIT_MINUTES` | The daily screentime limit in **minutes** |
+| `SCREENTIME_COUNT_INTERVAL_MS` | The interval with which the screentime is counted/updated in **milliseconds** |
+| `PING_INTERVAL_MS` | The interval with which the online status of the target computer is updated in **milliseconds** |
+| `PING_TIMEOUT_MS` | The timeout for the target computer to respond to online status checks in **milliseconds** |
+| `WEBHOOK_URL` | The Discord webhook URL to send notifications to. |
+| `PING_HOST` | Hostname or IP of the target computer. |
+| `HOST_USER` | Username for remote shutdown. This user has to have administrative privileges on the target computer. |
+| `PASSWD` | The password for the above mentioned user. |
+
+## Discord Webhook
+You need to create a Discord webhook for notifications to be sent. Refer to the [Discord Webhook Introduction](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) on how to do this.
+
+## Build & Import image into Docker
+After locally building the project, you need to build the Docker image and get is as a file which you can import into Docker on the production system.
+
+To do so, with the .sln opened in Visual Studio, open a Developer PowerShell window and execute:\
+`docker build -f ScreentimeManagerApp/Dockerfile -t screentimemanager:1.0`\
+`docker save -o screentimemanager_1.0.tar screentimemanager:1.0`
+
+This leaves you with a tarball of the image which can be imported on the production system via\
+`docker import screentimemanager_1.0.tar screentimemanager:1.0`
+
+## Deployment using `docker compose`
+The following is an example docker compose file for running _ScreentimeManager_:
+```yaml
+services:
+  screentimemmanager_example:
+    image: screentimemanager:1.0  # Your local container tag  
+    container_name: screentimemanager_example
+    environment:
+      TZ: Europe/Berlin  # The timezone is required to make sure screentime is reset at midnight local time and logging has correct timestamps
+      CULTURE: de-De
+      SCREENTIME_LIMIT_MINUTES: 180
+      SCREENTIME_COUNT_INTERVAL_MS: 1000
+      PING_INTERVAL_MS: 10000
+      PING_TIMEOUT_MS: 200
+      WEBHOOK_URL: "https://discord.com/api/webhooks/SomeLongStringThatOnlyYouKnow"  # See Discord documentation how to acquire this
+      PING_HOST: "ExampleComputer"
+      HOST_USER: Admin
+      PASSWD: ChangeMe
+    ports:
+      - "8080:8080/tcp"  # We make the API port available
+    network_mode: bridge
+    dns: 
+      - 192.168.0.1      # Allows us to use our local DNS server to resolve hostnames outside Docker
+```
+
+## WebAPI
+The WebAPI for _ScreentimeManager_ is very simple. There is a single endpoint available for GET requests:\
+`http://[Server:Port]/api/status`
+This endpoint returns a JSON object as follows:
+```json
+{
+  "hostname": "ExampleComputer",
+  "isOnline": false,
+  "screentimeLeft": "03:00:00",
+  "screentimeLimit": "03:00:00",
+  "screentimeUsedPercent": 0
+}
+```
+
