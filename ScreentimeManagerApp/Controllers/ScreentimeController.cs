@@ -19,6 +19,7 @@ namespace ScreentimeManagerApp.Controllers
 
         // GET: api/screentime/add/{minutes}
         [HttpPut("add/{minutes}")]
+        [Produces("application/json")]
         public async Task<IActionResult> AddScreentime(int minutes)
         {
             try
