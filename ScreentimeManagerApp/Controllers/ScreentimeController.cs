@@ -51,7 +51,7 @@ namespace ScreentimeManagerApp.Controllers
 
         }
 
-        // GET: api/screentime/zero
+        // GET: api/screentime/end
         [HttpPut("end")]
         [Produces("application/json")]
         public async Task<IActionResult> EndScreentime()
