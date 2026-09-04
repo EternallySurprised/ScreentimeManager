@@ -6,12 +6,12 @@ namespace ScreentimeManagerApp.Controllers
 {
     [ApiController]
     [Route("api/status")]
-    public class ScreentimeManagerController : ControllerBase
+    public class StatusController : ControllerBase
     {
-        protected readonly ILogger<ScreentimeManagerController> _logger;
+        protected readonly ILogger<StatusController> _logger;
         protected readonly ScreentimeManagerStatemachine _statemachine;
 
-        public ScreentimeManagerController(ILogger<ScreentimeManagerController> logger, ScreentimeManagerStatemachine statemachine)
+        public StatusController(ILogger<StatusController> logger, ScreentimeManagerStatemachine statemachine)
         {
             _logger = logger;
             _statemachine = statemachine;
