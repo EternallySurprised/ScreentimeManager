@@ -51,6 +51,19 @@ namespace ScreentimeManagerCore.Services
             RemainingScreentime = _config.Value.ScreentimeLimitMinutes >= 0 ? new TimeSpan(0, _config.Value.ScreentimeLimitMinutes, 0) : new TimeSpan(0, 180, 0);
         }
 
+        public void AddScreentime(int minutes)
+        {
+            if (minutes > 0)
+            {
+                RemainingScreentime = RemainingScreentime.Add(new TimeSpan(0, minutes, 0));
+                _logger.LogInformation($"Added {minutes} minutes to screentime. New remaining screentime: {RemainingScreentime.ToString()}");
+            }
+            else
+            {
+                _logger.LogWarning($"Attempted to add non-positive screentime: {minutes} minutes. No changes made.");
+            }
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
