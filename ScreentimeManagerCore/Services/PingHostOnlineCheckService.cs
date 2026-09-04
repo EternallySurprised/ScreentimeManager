@@ -88,7 +88,7 @@ namespace ScreentimeManagerCore.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error while checking host status.");
+                        _logger.LogError($"Error while checking host status: {ex.Message}");
                     }
                     finally
                     {
