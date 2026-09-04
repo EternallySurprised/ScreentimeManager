@@ -33,5 +33,39 @@ namespace ScreentimeManagerApp.Controllers
             }
             
         }
+
+        // GET: api/screentime/subtract/{minutes}
+        [HttpPut("subtract/{minutes}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> SubtractScreentime(int minutes)
+        {
+            try
+            {
+                _counterService.SubtractScreentime(minutes);
+                return Ok(new TimeSpan(_counterService.RemainingScreentime.Hours, _counterService.RemainingScreentime.Minutes, _counterService.RemainingScreentime.Seconds));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while subtracting screentime: {ex.Message}");
+            }
+
+        }
+
+        // GET: api/screentime/zero
+        [HttpPut("end")]
+        [Produces("application/json")]
+        public async Task<IActionResult> EndScreentime()
+        {
+            try
+            {
+                _counterService.EndScreentime();
+                return Ok(new TimeSpan(_counterService.RemainingScreentime.Hours, _counterService.RemainingScreentime.Minutes, _counterService.RemainingScreentime.Seconds));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while setting screentime to zero: {ex.Message}");
+            }
+
+        }
     }
 }
