@@ -64,6 +64,25 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
+        public void SubtractScreentime(int minutes)
+        {
+            if (minutes > 0)
+            {
+                RemainingScreentime = RemainingScreentime.Subtract(new TimeSpan(0, minutes, 0));
+                _logger.LogInformation($"Subtracted {minutes} minutes from screentime. New remaining screentime: {RemainingScreentime.ToString()}");
+            }
+            else
+            {
+                _logger.LogWarning($"Attempted to subtract non-positive screentime: {minutes} minutes. No changes made.");
+            }
+        }
+
+        public void EndScreentime()
+        {
+            RemainingScreentime = TimeSpan.Zero;
+            _logger.LogInformation($"Remaining screentime manually set to zero.");
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
