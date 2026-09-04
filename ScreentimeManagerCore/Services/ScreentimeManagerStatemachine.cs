@@ -142,7 +142,7 @@ namespace ScreentimeManagerCore.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Shutdown failed");
+                _logger.LogError($"Shutdown failed. {ex.Message}");
                 _stateMachine.Fire(Events.ShutdownError);
             }
         }

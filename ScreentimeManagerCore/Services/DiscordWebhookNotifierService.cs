@@ -38,7 +38,7 @@ namespace ScreentimeManagerCore.Services
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Configured culture could not be used.");
+                _logger.LogError($"Configured culture could not be used. {ex.Message}");
                 _culture = CultureInfo.InvariantCulture;
             }
         }
