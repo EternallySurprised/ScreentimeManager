@@ -60,18 +60,18 @@ You need to create a Discord webhook for notifications to be sent. Refer to the 
 After locally building the project, you need to build the Docker image and get is as a file which you can import into Docker on the production system.
 
 To do so, with the .sln opened in Visual Studio, open a Developer PowerShell window and execute:\
-`docker build -f ScreentimeManagerApp/Dockerfile -t screentimemanager:1.0`\
-`docker save -o screentimemanager_1.0.tar screentimemanager:1.0`
+`docker build -f ScreentimeManagerApp/Dockerfile -t screentimemanager`\
+`docker save -o screentimemanager.tar screentimemanager`
 
 This leaves you with a tarball of the image which can be imported on the production system via\
-`docker import screentimemanager_1.0.tar screentimemanager:1.0`
+`docker import screentimemanager.tar screentimemanager`
 
 ## Deployment using `docker compose`
 The following is an example docker compose file for running _ScreentimeManager_:
 ```yaml
 services:
   screentimemmanager_example:
-    image: screentimemanager:1.0  # Your local container tag  
+    image: screentimemanager:latest  # Your local image name and tag. If none was given, it will be "latest"  
     container_name: screentimemanager_example
     environment:
       TZ: Europe/Berlin  # The timezone is required to make sure screentime is reset at midnight local time and logging has correct timestamps
@@ -92,7 +92,7 @@ services:
 ```
 
 ## WebAPI
-The WebAPI for _ScreentimeManager_ is very simple. There is a single endpoint available for GET requests:\
+The WebAPI for _ScreentimeManager_ is very simple. There is an endpoint available for _GET_ requests which provides status information:\
 `http://[Server:Port]/api/status`
 This endpoint returns a JSON object as follows:
 ```json
@@ -103,5 +103,13 @@ This endpoint returns a JSON object as follows:
   "screentimeLimit": "03:00:00",
   "screentimeUsedPercent": 0
 }
+```
+There is also a _PUT_ endpoint available which allows to add additional screentime for the current day.\
+The configured screentime limit is not changed which means that on the following day, the previously configured screentime limit is used.\
+The endpoint is:\
+`http://[Server:Port]/api/screentime/add/[minutes]`
+This endpoint returns the new, remaining screentime on success.
+```json
+"03:30:00"
 ```
 
