@@ -6,17 +6,25 @@ using System.Diagnostics;
 
 namespace ScreentimeManagerCore.Services
 {
+    /// <summary>
+    /// Remote shutdown service that uses the 'net rpc shutdown' command to shut down a remote host. The password is expected to be set in the environment variable "PASSWD".
+    /// </summary>
     public class NetRemoteShutdownService : IRemoteShutdownService
     {
+        #region Fields
         protected readonly ILogger<NetRemoteShutdownService> _logger;
         protected IOptions<RemoteShutdownConfiguration> _config;
+        #endregion
 
+        #region Constructors
         public NetRemoteShutdownService(ILogger<NetRemoteShutdownService> logger, IOptions<RemoteShutdownConfiguration> config)
         {
             _logger = logger;
             _config = config;
         }
+        #endregion
 
+        #region Public Methods
         /// <summary>
         /// Shuts down a remote host using the configured host and username. The password is expected to be set in the environment variable "PASSWD".
         /// </summary>
@@ -53,7 +61,9 @@ namespace ScreentimeManagerCore.Services
                 throw new Exception(msg);
             }
         }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Executes a system command
         /// </summary>
@@ -90,6 +100,7 @@ namespace ScreentimeManagerCore.Services
                 output = error;
                 return false;
             }
-        }
+        } 
+        #endregion
     }
 }

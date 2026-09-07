@@ -15,6 +15,7 @@ namespace ScreentimeManagerCore.Services
 {
     public class ScreentimeCounterService : BackgroundService
     {
+        #region Fields
         protected const int FALLBACK_SCREENTIME_LIMIT = 180;
         protected readonly ILogger<ScreentimeCounterService> _logger;
         protected readonly IOptions<ScreentimeCounterConfiguration> _config;
@@ -22,9 +23,14 @@ namespace ScreentimeManagerCore.Services
         protected readonly int _interval;
         protected DateTime _currentDay;
         protected DateTime _lastCheckTime;
+        #endregion
 
+        #region Properties
         public TimeSpan RemainingScreentime { get; protected set; }
 
+        /// <summary>
+        /// The configured screentime limit in minutes. If the configuration is invalid, the fallback value of <see cref="FALLBACK_SCREENTIME_LIMIT"/> is used.
+        /// </summary>
         public TimeSpan ScreentimeLimit
         {
             get
@@ -33,6 +39,9 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
+        /// <summary>
+        /// Indicates that the allowed screentime has been exceeded.
+        /// </summary>
         public bool ScreentimeExceeded
         {
             get
@@ -40,7 +49,9 @@ namespace ScreentimeManagerCore.Services
                 return RemainingScreentime <= TimeSpan.Zero;
             }
         }
+        #endregion
 
+        #region Constructors
         public ScreentimeCounterService(ILogger<ScreentimeCounterService> logger, IOptions<ScreentimeCounterConfiguration> config, IHostOnlineCheckService onlineCheckService)
         {
             _logger = logger;
@@ -50,7 +61,13 @@ namespace ScreentimeManagerCore.Services
             _interval = _config.Value.CheckInterval > 0 ? _config.Value.CheckInterval : 1000;
             RemainingScreentime = _config.Value.ScreentimeLimitMinutes >= 0 ? new TimeSpan(0, _config.Value.ScreentimeLimitMinutes, 0) : new TimeSpan(0, 180, 0);
         }
+        #endregion
 
+        #region Public Methods
+        /// <summary>
+        /// Adds the specified number of minutes to the remaining screentime. This can be used to manually increase the allowed screentime.
+        /// </summary>
+        /// <param name="minutes"></param>
         public void AddScreentime(int minutes)
         {
             if (minutes > 0)
@@ -64,6 +81,10 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
+        /// <summary>
+        /// Subtracts the specified number of minutes from the remaining screentime. This can be used to manually reduce the allowed screentime.
+        /// </summary>
+        /// <param name="minutes">Amount of minutes to subtract from remaining screentime</param>
         public void SubtractScreentime(int minutes)
         {
             if (minutes > 0)
@@ -77,12 +98,33 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
+        /// <summary>
+        /// Sets the remaining screentime to zero, effectively ending the allowed screentime. This can be used to manually end the screentime countdown.
+        /// </summary>
         public void EndScreentime()
         {
             RemainingScreentime = TimeSpan.Zero;
             _logger.LogInformation($"Remaining screentime manually set to zero.");
         }
 
+        /// <summary>
+        /// Resets the remaining screentime to the configured screentime limit. This can be used to manually reset the screentime counter, for example at the start of a new day or after a specific event.
+        /// </summary>
+        public void ResetScreentime()
+        {
+            RemainingScreentime = ScreentimeLimit;
+            _logger.LogInformation($"Remaining screentime reset to {ScreentimeLimit}.");
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Executed when the background service is started. This method runs in a loop, checking the remaining screentime and updating it based on the host's online status. 
+        /// If the host is online, the remaining screentime is decremented based on the elapsed time since the last check. 
+        /// If the host is offline, the countdown is paused. The remaining screentime is reset at the start of a new day.
+        /// </summary>
+        /// <param name="stoppingToken"><see cref="CancellationToken"/> for graceful task cancellation.</param>
+        /// <returns><see cref="Task"/> reference.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -123,6 +165,7 @@ namespace ScreentimeManagerCore.Services
                 }
             }
 
-        }
+        } 
+        #endregion
     }
 }

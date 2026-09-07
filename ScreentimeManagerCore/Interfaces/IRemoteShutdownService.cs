@@ -1,5 +1,8 @@
 ﻿namespace ScreentimeManagerCore.Interfaces
 {
+    /// <summary>
+    /// An interface representing a service that can perform remote shutdown operations on a host machine.
+    /// </summary>
     public interface IRemoteShutdownService
     {
         /// <summary>

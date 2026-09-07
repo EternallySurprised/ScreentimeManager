@@ -8,10 +8,11 @@ using System.Net.NetworkInformation;
 namespace ScreentimeManagerCore.Services
 {
     /// <summary>
-    /// Background service that regularly checks, if a host on the network is online.
+    /// Background service that regularly checks if a host on the network is online.
     /// </summary>
     public class PingHostOnlineCheckService : BackgroundService, IHostOnlineCheckService
     {
+        #region Fields
         protected const int FALLBACK_TIMEOUT = 200;
         protected const int FALLBACK_INTERVAL = 30000;
         protected const string FALLBACK_HOSTNAME = "localhost";
@@ -22,7 +23,9 @@ namespace ScreentimeManagerCore.Services
         protected readonly int _pingIntervalMs = 30000;
         protected bool _hostIsOnline = false;
         protected bool _oldHostIsOnline = false;
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Indicates if the configured host is currently online.
         /// </summary>
@@ -32,12 +35,16 @@ namespace ScreentimeManagerCore.Services
         /// Gets the current configuration settings for the online check process.
         /// </summary>
         public virtual OnlineCheckConfiguration CurrentConfiguration { get => _config.Value; }
+        #endregion
 
+        #region Events
         /// <summary>
         /// Called whenever the host status is updated.
         /// </summary>
         public event Action<bool>? HostStatusUpdated;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Creates a new instance of the <see cref="PingHostOnlineCheckService"/>
         /// </summary>
@@ -52,7 +59,8 @@ namespace ScreentimeManagerCore.Services
             _pingIntervalMs = _config.Value.CheckInterval > 0 ? _config.Value.CheckInterval : FALLBACK_INTERVAL;
 
             _logger.LogDebug($"HostOnlineCheckService instantiated.\r\nHostname: {_hostToPing}\r\nTimeout: {_pingTimeoutMs}\r\nInterval: {_pingIntervalMs}");
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// Is called for every host status update and invokes <see cref="HostStatusUpdated"/>
@@ -63,6 +71,12 @@ namespace ScreentimeManagerCore.Services
             HostStatusUpdated?.Invoke(isOnline);
         }
 
+        #region BackgroundService Implementation
+        /// <summary>
+        /// Executes the task asynchronously. This runs a loop in which the host status is checked regularly.
+        /// </summary>
+        /// <param name="stoppingToken"><see cref="CancellationToken"/> to allow graceful cancellation.</param>
+        /// <returns><see cref="Task"/> reference.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using (Ping pingSender = new Ping())
@@ -97,6 +111,7 @@ namespace ScreentimeManagerCore.Services
                     }
                 }
             }
-        }
+        } 
+        #endregion
     }
 }

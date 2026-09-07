@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Interfaces
 {
+    /// <summary>
+    /// An interface for sending notifications via webhooks, such as Discord or other services, regarding the status of the host machine in relation to screentime management.
+    /// </summary>
     public interface IWebhookNotifier
     {
         /// <summary>

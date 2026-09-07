@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Configuration
 {
+    /// <summary>
+    /// Configuration class for remote shutdown settings. This class holds the necessary information to perform a remote shutdown on a specified host.
+    /// </summary>
     public class RemoteShutdownConfiguration
     {
         /// <summary>
