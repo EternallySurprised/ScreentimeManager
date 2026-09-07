@@ -104,12 +104,13 @@ This endpoint returns a JSON object as follows:
   "screentimeUsedPercent": 0
 }
 ```
-There is also a set of _PUT_ endpoint available which allows to add or subtract screentime for the current day or set the remaining screentime to zero.\
+There is also a set of _PUT_ endpoint available which allows to add or subtract screentime for the current day, set the remaining screentime to zero or reset the screentime to the configured limit.\
 The configured screentime limit is not changed which means that on the following day, the previously configured screentime limit is used.\
 The endpoints are:\
 `http://[Server:Port]/api/screentime/add/[minutes]`\
 `http://[Server:Port]/api/screentime/subtract/[minutes]`\
 `http://[Server:Port]/api/screentime/end`\
+`http://[Server:Port]/api/screentime/reset`\
 These endpoints all return the new, remaining screentime on success.
 ```json
 "03:30:00"
