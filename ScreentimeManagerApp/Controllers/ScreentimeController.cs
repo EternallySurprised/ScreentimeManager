@@ -8,19 +8,28 @@ namespace ScreentimeManagerApp.Controllers
     [Route("api/screentime")]
     public class ScreentimeController : ControllerBase
     {
+        #region Fields
         protected readonly ILogger<StatusController> _logger;
         protected readonly ScreentimeCounterService _counterService;
+        #endregion
 
+        #region Constructors
         public ScreentimeController(ILogger<StatusController> logger, ScreentimeCounterService counterService)
         {
             _logger = logger;
             _counterService = counterService;
         }
+        #endregion
 
-        // GET: api/screentime/add/{minutes}
+        #region Public Methods
+        /// <summary>
+        /// Endpoint to add screentime in minutes to the current remaining screentime. Returns the updated remaining screentime as a TimeSpan.
+        /// </summary>
+        /// <param name="minutes">Number of minutes to add to remaining screentime</param>
+        /// <returns></returns>
         [HttpPut("add/{minutes}")]
         [Produces("application/json")]
-        public async Task<IActionResult> AddScreentime(int minutes)
+        public async Task<ActionResult<TimeSpan>> AddScreentime(int minutes)
         {
             try
             {
@@ -31,13 +40,17 @@ namespace ScreentimeManagerApp.Controllers
             {
                 return StatusCode(500, $"An error occurred while adding screentime: {ex.Message}");
             }
-            
+
         }
 
-        // GET: api/screentime/subtract/{minutes}
+        /// <summary>
+        /// Subtracts the specified number of minutes from the remaining screentime.
+        /// </summary>
+        /// <param name="minutes">Number of minutes to subtract from remaining screentime</param>
+        /// <returns>The updated remaining screentime as a <see cref="TimeSpan"></returns>
         [HttpPut("subtract/{minutes}")]
         [Produces("application/json")]
-        public async Task<IActionResult> SubtractScreentime(int minutes)
+        public async Task<ActionResult<TimeSpan>> SubtractScreentime(int minutes)
         {
             try
             {
@@ -51,10 +64,13 @@ namespace ScreentimeManagerApp.Controllers
 
         }
 
-        // GET: api/screentime/end
+        /// <summary>
+        /// Sets the remaining screentime to zero. Returns the updated remaining screentime as a TimeSpan.
+        /// </summary>
+        /// <returns>>The updated remaining screentime as a <see cref="TimeSpan"></returns>
         [HttpPut("end")]
         [Produces("application/json")]
-        public async Task<IActionResult> EndScreentime()
+        public async Task<ActionResult<TimeSpan>> EndScreentime()
         {
             try
             {
@@ -67,5 +83,26 @@ namespace ScreentimeManagerApp.Controllers
             }
 
         }
+
+        /// <summary>
+        /// Resets the remaining screentime to the configured maximum screentime limit.
+        /// </summary>
+        /// <returns>>The updated remaining screentime as a <see cref="TimeSpan"></returns>
+        [HttpPut("reset")]
+        [Produces("application/json")]
+        public async Task<ActionResult<TimeSpan>> ResetScreentime()
+        {
+            try
+            {
+                _counterService.ResetScreentime();
+                return Ok(new TimeSpan(_counterService.RemainingScreentime.Hours, _counterService.RemainingScreentime.Minutes, _counterService.RemainingScreentime.Seconds));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while resetting screentime to configured maximum: {ex.Message}");
+            }
+
+        } 
+        #endregion
     }
 }

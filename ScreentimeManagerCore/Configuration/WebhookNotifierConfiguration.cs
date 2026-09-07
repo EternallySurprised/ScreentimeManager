@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Configuration
 {
+    /// <summary>
+    /// Configuration class for the webhook notifier service. This class holds the settings required to send notifications via a webhook.
+    /// </summary>
     public class WebhookNotifierConfiguration
     {
         /// <summary>

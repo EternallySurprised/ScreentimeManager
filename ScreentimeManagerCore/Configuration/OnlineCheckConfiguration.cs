@@ -3,7 +3,7 @@
 namespace ScreentimeManagerCore.Configuration
 {
     /// <summary>
-    /// Represents the configuration for an Online-Check Service.
+    /// Configuration class for the Online-Check service. This class holds the settings for the host online check.
     /// </summary>
     public class OnlineCheckConfiguration
     {

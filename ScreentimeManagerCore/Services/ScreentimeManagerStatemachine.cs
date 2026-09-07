@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace ScreentimeManagerCore.Services
 {
+    /// <summary>
+    /// Available states for the screentime manager state machine.
+    /// </summary>
     public enum States
     {
         HostIsOffline,
@@ -19,6 +22,9 @@ namespace ScreentimeManagerCore.Services
         HostIsBeingShutdown
     }
 
+    /// <summary>
+    /// Available events for the screentime manager state machine.
+    /// </summary>
     public enum Events
     {
         Offline,
@@ -26,8 +32,12 @@ namespace ScreentimeManagerCore.Services
         ShutdownError
     }
 
+    /// <summary>
+    /// Statemachine implementation for the screentime manager. This class is responsible for managing the state of the host based on its online status and screentime usage.
+    /// </summary>
     public class ScreentimeManagerStatemachine : IHostedService
     {
+        #region Fields
         protected bool _prevHostOnline = false;
         protected readonly ILogger<ScreentimeManagerStatemachine> _logger;
         protected readonly IHostOnlineCheckService _hostOnlineCheckService;
@@ -35,7 +45,12 @@ namespace ScreentimeManagerCore.Services
         protected readonly ScreentimeCounterService _counterService;
         protected readonly IWebhookNotifier _webhookNotifier;
         protected readonly PassiveStateMachine<States, Events> _stateMachine;
+        #endregion
 
+        #region Properties
+        /// <summary>
+        /// Gets the current status of the host.
+        /// </summary>
         public HostStatus CurrentHostStatus
         {
             get
@@ -51,13 +66,15 @@ namespace ScreentimeManagerCore.Services
                 return result;
             }
         }
+        #endregion
 
+        #region Constructors
         public ScreentimeManagerStatemachine(
-            ILogger<ScreentimeManagerStatemachine> logger, 
-            IHostOnlineCheckService hostOnlineCheckService, 
-            IRemoteShutdownService remoteShutdownService, 
-            IWebhookNotifier webhookNotifier,
-            ScreentimeCounterService counterService)
+           ILogger<ScreentimeManagerStatemachine> logger,
+           IHostOnlineCheckService hostOnlineCheckService,
+           IRemoteShutdownService remoteShutdownService,
+           IWebhookNotifier webhookNotifier,
+           ScreentimeCounterService counterService)
         {
             _logger = logger;
             _hostOnlineCheckService = hostOnlineCheckService;
@@ -95,7 +112,9 @@ namespace ScreentimeManagerCore.Services
             _stateMachine = definition.CreatePassiveStateMachine("ScreentimeManager");
             _counterService = counterService;
         }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Called whenever the host online status is updated
         /// </summary>
@@ -133,6 +152,9 @@ namespace ScreentimeManagerCore.Services
             return _counterService.ScreentimeExceeded;
         }
 
+        /// <summary>
+        /// Executes a host shutdown.
+        /// </summary>
         protected void ExecuteShutdown()
         {
             try
@@ -147,24 +169,40 @@ namespace ScreentimeManagerCore.Services
             }
         }
 
+        /// <summary>
+        /// Send notification when screentime is used up.
+        /// </summary>
         protected void NotifyTimeUp()
         {
             _logger.LogInformation("Screentime for host is used up.");
             _webhookNotifier.NotifyTimeUpAsync(CurrentHostStatus);
         }
 
+        /// <summary>
+        /// Send notification when the host was turned on again after a shutdown due to exceeded screentime.
+        /// </summary>
         protected void NotifyTurnedOnWithoutTimeLeft()
         {
             _logger.LogInformation("Host turned on without time left.");
             _webhookNotifier.NotifyTurnedOnWithoutTimeLeftAsync(CurrentHostStatus);
         }
 
+        /// <summary>
+        /// Send notification when the host was successfully shut down.
+        /// </summary>
         protected void NotifyHostHasShutdown()
         {
             _logger.LogInformation("Host has shutdown.");
             _webhookNotifier.NotifyHostHasShutdownAsync(CurrentHostStatus);
         }
+        #endregion
 
+        #region IHostedService Implementation
+        /// <summary>
+        /// Starts the statemachine to bring it into operational state.
+        /// </summary>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> to allow graceful cancellation.</param>
+        /// <returns><see cref="Task"/> reference.</returns>
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _stateMachine.Start();
@@ -173,12 +211,18 @@ namespace ScreentimeManagerCore.Services
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Stops the statemachine.
+        /// </summary>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> to allow graceful cancellation.</param>
+        /// <returns><see cref="Task"/> reference.</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _stateMachine.Stop();
             _logger.LogInformation("Statemachine stopped.");
 
             return Task.CompletedTask;
-        }
+        } 
+        #endregion
     }
 }

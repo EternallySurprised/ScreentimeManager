@@ -3,6 +3,9 @@ using ScreentimeManagerCore.Configuration;
 
 namespace ScreentimeManagerCore.Interfaces
 {
+    /// <summary>
+    /// An interface for a service that checks if a configured host is online and provides the current configuration settings for the online check process.
+    /// </summary>
     public interface IHostOnlineCheckService : IHostedService
     {
         /// <summary>
