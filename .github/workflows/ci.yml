@@ -31,8 +31,6 @@ jobs:
       - name: Determine Version
         id: version_step
         uses: gittools/actions/gitversion/execute@v4.7.0
-        with:
-          useConfigFile: true
 
       - run: |
           echo "GitVersion determined this is version ${{ steps.version_step.outputs.semVer }}"
