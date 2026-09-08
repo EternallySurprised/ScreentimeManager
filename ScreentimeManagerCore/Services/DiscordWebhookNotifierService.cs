@@ -28,9 +28,16 @@ namespace ScreentimeManagerCore.Services
             _logger = logger;
             _config = config;
 
-            _webhookUrl = new Uri(_config.Value.WebhookUrl != null ? _config.Value.WebhookUrl : "https://localhost");
+            try
+            {
+                _webhookUrl = new Uri(_config.Value.WebhookUrl != null ? _config.Value.WebhookUrl : "https://localhost");
+                _webhook = new DiscordWebhook(_webhookUrl);
+            }
+            catch (Exception ex)
+            {
 
-            _webhook = new DiscordWebhook(_webhookUrl);
+                _logger.LogError($"Provided webhook URL is invalid. {ex.Message}");
+            }
 
             try
             {
@@ -62,11 +69,17 @@ namespace ScreentimeManagerCore.Services
         {
             try
             {
+                if( _webhook == null)
+                {
+                    _logger.LogError("Discord Webhook is not initialized. Cannot send notification.");
+                    return;
+                }
+
                 await _webhook.SendMessageAsync(messageGenerator(status));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send notification via Discord webhook.");
+                _logger.LogError($"Failed to send notification via Discord webhook. {ex.Message}");
             }
         }
 

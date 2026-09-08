@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3c61c649-e5e1-4afd-b85f-7e7967e90d56</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Year>$([System.DateTime]::Now.Year.ToString())</Year>
+    <Company>EternallySurprised</Company>
+    <Copyright>$(Company) (c) $(Year) All Rights Reserved</Copyright>
+    <Description>Hosted Screentime Manager Service</Description>
+    <Product>ScreentimeManager</Product>
+    <AssemblyTitle>ScreentimeManager</AssemblyTitle>
+    <VersionPrefix>1.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
