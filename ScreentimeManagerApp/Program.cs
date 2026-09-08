@@ -3,6 +3,7 @@ using ScreentimeManagerCore.Configuration;
 using ScreentimeManagerCore.Interfaces;
 using ScreentimeManagerCore.Services;
 using Serilog;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace ScreentimeManagerApp
@@ -26,8 +27,8 @@ namespace ScreentimeManagerApp
                 .WriteTo.Console()
                 .CreateLogger();
 
-            string assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Log.Logger.Information($"ScreentimeManager - Version: {(assemblyVersion != null ? assemblyVersion : "???")}");
+            var version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            Log.Logger.Information($"ScreentimeManager - Version: {(version != null ? version : "???")}");
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddSerilog();

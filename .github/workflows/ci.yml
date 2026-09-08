@@ -21,6 +21,7 @@ jobs:
       semVer: ${{ steps.version_step.outputs.semVer }}
       fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
       majorMinorPatch: ${{ steps.version_step.outputs.majorMinorPatch }}
+      versionTag: ${{ steps.version_step.outputs.tag }}
 
     steps:
       - name: Checkout code
@@ -114,4 +115,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            VERSION =${{ needs.build-and-test.outputs.majorMinorPatch }}
+            TAG =${{ needs.build-and-test.outputs.tag }}
   
