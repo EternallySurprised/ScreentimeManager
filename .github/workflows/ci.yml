@@ -17,6 +17,10 @@ jobs:
   build-and-test:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      semVer: ${{ steps.version_step.outputs.semVer }}
+      fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
+      majorMinorPatch: ${{ steps.version_step.outputs.majorMinorPatch }}
 
     steps:
       - name: Checkout code
