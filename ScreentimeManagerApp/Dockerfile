@@ -31,17 +31,21 @@ ENV PASSWD ChangeMe
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG VERSION=1.0.0
+ARG TAG=""
 WORKDIR /src
 COPY ["ScreentimeManagerApp/ScreentimeManagerApp.csproj", "ScreentimeManagerApp/"]
-RUN dotnet restore "./ScreentimeManagerApp/ScreentimeManagerApp.csproj"
+RUN dotnet restore "./ScreentimeManagerApp/ScreentimeManagerApp.csproj" /p:VersionPrefix=$VERSION /p:VersionSuffix=$TAG
 COPY . .
 WORKDIR "/src/ScreentimeManagerApp"
-RUN dotnet build "./ScreentimeManagerApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./ScreentimeManagerApp.csproj" -c $BUILD_CONFIGURATION -o /app/build /p:VersionPrefix=$VERSION /p:VersionSuffix=$TAG
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ScreentimeManagerApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+ARG VERSION=1.0.0
+ARG TAG=""
+RUN dotnet publish "./ScreentimeManagerApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:VersionPrefix=$VERSION /p:VersionSuffix=$TAG
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
