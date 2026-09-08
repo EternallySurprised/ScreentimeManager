@@ -116,6 +116,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VERSION =${{ needs.build-and-test.outputs.majorMinorPatch }}
-            TAG =${{ needs.build-and-test.outputs.tag }}
+            VERSION=${{ needs.build-and-test.outputs.majorMinorPatch }}
+            TAG=${{ needs.build-and-test.outputs.tag }}
   
