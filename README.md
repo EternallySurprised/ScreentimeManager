@@ -56,22 +56,15 @@ Configuration of the _ScreentimeManager_ is done using the following environment
 ## Discord Webhook
 You need to create a Discord webhook for notifications to be sent. Refer to the [Discord Webhook Introduction](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) on how to do this.
 
-## Build & Import image into Docker
-After locally building the project, you need to build the Docker image and get is as a file which you can import into Docker on the production system.
-
-To do so, with the .sln opened in Visual Studio, open a Developer PowerShell window and execute:\
-`docker build -f ScreentimeManagerApp/Dockerfile -t screentimemanager`\
-`docker save -o screentimemanager.tar screentimemanager`
-
-This leaves you with a tarball of the image which can be imported on the production system via\
-`docker import screentimemanager.tar screentimemanager`
+## Docker Image
+You can find the Docker image in the GitHub Image Repository [here](https://github.com/EternallySurprised/ScreentimeManager/pkgs/container/screentimemanager).
 
 ## Deployment using `docker compose`
 The following is an example docker compose file for running _ScreentimeManager_:
 ```yaml
 services:
   screentimemmanager_example:
-    image: screentimemanager:latest  # Your local image name and tag. If none was given, it will be "latest"  
+    image: ghcr.io/eternallysurprised/screentimemanager:latest 
     container_name: screentimemanager_example
     environment:
       TZ: Europe/Berlin  # The timezone is required to make sure screentime is reset at midnight local time and logging has correct timestamps
